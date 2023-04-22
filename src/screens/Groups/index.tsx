@@ -1,8 +1,5 @@
-import { GroupsContainer } from './styles';
+import { GroupsContainer } from './styles'
 
 export function Groups() {
-  return (
-    <GroupsContainer>
-    </GroupsContainer>
-  );
+  return <GroupsContainer></GroupsContainer>
 }
