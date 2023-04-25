@@ -1,4 +1,3 @@
-import React from 'react'
 import { HighlightContainer, Subtitle, Title } from './styles'
 
 type HighlightProps = {
