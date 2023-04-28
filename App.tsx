@@ -3,8 +3,8 @@ import { useFonts } from 'expo-font'
 import { ThemeProvider } from 'styled-components/native'
 import { Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto'
 
-import { Groups } from '@screens/Groups'
 import { Loading } from '@components/Loading'
+import { Routes } from './src/routes'
 import { theme } from './src/theme'
 
 export default function App() {
@@ -21,7 +21,7 @@ export default function App() {
         translucent
       />
 
-      {isFontsLoaded ? <Groups /> : <Loading />}
+      {isFontsLoaded ? <Routes /> : <Loading />}
     </ThemeProvider>
   )
 }
