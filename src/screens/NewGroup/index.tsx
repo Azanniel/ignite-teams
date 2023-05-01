@@ -8,14 +8,23 @@ import { Button } from '@components/Button'
 
 import { NewGroupContainer, Content, Icon } from './styles'
 import { useNavigation } from '@react-navigation/native'
+import { groupCreate } from '@storage/group/group-create'
 
 export function NewGroup() {
   const [group, setGroup] = useState('')
 
   const { navigate } = useNavigation()
 
-  function handleNewGroup() {
-    navigate('players', { group })
+  async function handleNewGroup() {
+    try {
+      await groupCreate(group)
+
+      setGroup('')
+
+      navigate('players', { group })
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -34,7 +43,11 @@ export function NewGroup() {
             subtitle="crie uma turma para adicionar as pessoas"
           />
 
-          <Input placeholder="Nome da turma" onChangeText={setGroup} />
+          <Input
+            placeholder="Nome da turma"
+            onChangeText={setGroup}
+            value={group}
+          />
 
           <Button
             title="Criar"
