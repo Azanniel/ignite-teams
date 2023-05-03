@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FlatList } from 'react-native'
 import { useRoute } from '@react-navigation/native'
 
@@ -11,13 +11,17 @@ import { PlayerCard } from '@components/PlayerCard'
 import { ListEmpty } from '@components/ListEmpty'
 import { Button } from '@components/Button'
 
+import { Group } from '@storage/group/group-interface'
+import { findGroupById } from '@storage/group/find-group-by-id'
+
 import { PlayersContainer, Form, HeaderList, NumbersOfPlayers } from './styles'
 
 type RouteParams = {
-  group: string
+  groupId: string
 }
 
 export function Players() {
+  const [group, setGroup] = useState<Group>({} as Group)
   const [team, setTeam] = useState('Time A')
   const [players] = useState([
     'Leandro',
@@ -28,13 +32,33 @@ export function Players() {
   ])
 
   const route = useRoute()
-  const { group } = route.params as RouteParams
+  const { groupId } = route.params as RouteParams
+
+  async function fetchCurrentGroup(groupId: string) {
+    try {
+      const response = await findGroupById(groupId)
+      return response
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    fetchCurrentGroup(groupId).then((response) => {
+      if (response) {
+        setGroup(response)
+      }
+    })
+  }, [groupId])
 
   return (
     <PlayersContainer>
       <Header showBackButton />
 
-      <Highlight title={group} subtitle="adicione a galera e separe os times" />
+      <Highlight
+        title={group.name}
+        subtitle="adicione a galera e separe os times"
+      />
 
       <Form>
         <Input placeholder="Nome da pessoa" autoCorrect={false} />

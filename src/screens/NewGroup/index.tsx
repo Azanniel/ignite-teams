@@ -1,28 +1,45 @@
 import { useState } from 'react'
-import { KeyboardAvoidingView, Platform } from 'react-native'
+import { Alert, KeyboardAvoidingView, Platform } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 
 import { Header } from '@components/Header'
 import { Highlight } from '@components/Highlight'
 import { Input } from '@components/Input'
 import { Button } from '@components/Button'
 
+import { createGroup } from '@storage/group/create-group'
+import { GroupAlreadyExistsError } from '@utils/errors/group-already-exists-error'
+
 import { NewGroupContainer, Content, Icon } from './styles'
-import { useNavigation } from '@react-navigation/native'
-import { groupCreate } from '@storage/group/group-create'
 
 export function NewGroup() {
   const [group, setGroup] = useState('')
 
-  const { navigate } = useNavigation()
+  const navigation = useNavigation()
 
   async function handleNewGroup() {
     try {
-      await groupCreate(group)
+      if (!group.trim()) {
+        return Alert.alert('Novo grupo', 'Informe o nome da turma.')
+      }
+
+      const storedGroup = await createGroup(group)
 
       setGroup('')
 
-      navigate('players', { group })
+      navigation.reset({
+        index: 1,
+        routes: [
+          { name: 'groups' },
+          { name: 'players', params: { groupId: storedGroup.id } },
+        ],
+      })
     } catch (error) {
+      if (error instanceof GroupAlreadyExistsError) {
+        return Alert.alert('Novo grupo', error.message)
+      }
+
+      Alert.alert('Novo grupo', 'Não foi possível criar um novo grupo')
       console.error(error)
     }
   }

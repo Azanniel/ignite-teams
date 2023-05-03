@@ -7,7 +7,9 @@ import { Highlight } from '@components/Highlight'
 import { GroupCard } from '@components/GroupCard'
 import { ListEmpty } from '@components/ListEmpty'
 import { Button } from '@components/Button'
-import { Group, groupGetAll } from '@storage/group/group-get-all'
+
+import { Group } from '@storage/group/group-interface'
+import { findManyGroups } from '@storage/group/find-many-groups'
 
 import { GroupsContainer } from './styles'
 
@@ -22,11 +24,15 @@ export function Groups() {
 
   async function fetchGroups() {
     try {
-      const response = await groupGetAll()
+      const response = await findManyGroups()
       setGroups(response)
     } catch (error) {
       console.error(error)
     }
+  }
+
+  function handleOpenGroup(groupId: string) {
+    navigate('players', { groupId })
   }
 
   useFocusEffect(
@@ -45,7 +51,13 @@ export function Groups() {
         data={groups}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
-          return <GroupCard title={item.name} />
+          console.log(item)
+          return (
+            <GroupCard
+              title={item.name}
+              onPress={() => handleOpenGroup(item.id)}
+            />
+          )
         }}
         contentContainerStyle={
           groups.length === 0 && {
@@ -55,6 +67,7 @@ export function Groups() {
         ListEmptyComponent={() => (
           <ListEmpty message="Que tal cadastrar a primeira turma?" />
         )}
+        showsVerticalScrollIndicator={false}
       />
 
       <Button title="Criar nova turma" onPress={handleNavigateToNewGroup} />
