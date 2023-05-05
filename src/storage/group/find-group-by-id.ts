@@ -1,19 +1,20 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { GROUP_COLLECTION } from '@storage/storage-config'
-import { Group } from './group-interface'
+import { GroupStorageDTO } from './group-storage-dto'
+import { GroupWasNotFondError } from '@utils/errors/group-was-not-found-error'
 
-export async function findGroupById(groupId: string): Promise<Group> {
+export async function findGroupById(groupId: string) {
   const storage = await AsyncStorage.getItem(GROUP_COLLECTION)
 
   if (!storage) {
-    throw new Error('Group was not found')
+    throw new GroupWasNotFondError()
   }
 
-  const groups = JSON.parse(storage) as Group[]
+  const groups = JSON.parse(storage) as GroupStorageDTO[]
   const group = groups.find((item) => item.id === groupId)
 
   if (!group) {
-    throw new Error('Group was not found')
+    throw new GroupWasNotFondError()
   }
 
   return group

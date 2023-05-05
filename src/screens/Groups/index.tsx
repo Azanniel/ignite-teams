@@ -8,13 +8,13 @@ import { GroupCard } from '@components/GroupCard'
 import { ListEmpty } from '@components/ListEmpty'
 import { Button } from '@components/Button'
 
-import { Group } from '@storage/group/group-interface'
+import { GroupStorageDTO } from '@storage/group/group-storage-dto'
 import { findManyGroups } from '@storage/group/find-many-groups'
 
 import { GroupsContainer } from './styles'
 
 export function Groups() {
-  const [groups, setGroups] = useState<Group[]>([])
+  const [groups, setGroups] = useState<GroupStorageDTO[]>([])
 
   const { navigate } = useNavigation()
 
@@ -51,7 +51,6 @@ export function Groups() {
         data={groups}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
-          console.log(item)
           return (
             <GroupCard
               title={item.name}
