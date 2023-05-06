@@ -13,10 +13,11 @@ import { Button } from '@components/Button'
 import { Loading } from '@components/Loading'
 
 import { GroupStorageDTO } from '@storage/group/group-storage-dto'
+import { PlayerStorageDTO } from '@storage/players/player-storage-dto'
 import { findGroupById } from '@storage/group/find-group-by-id'
 import { createPlayerByGroup } from '@storage/players/create-player-by-group'
 import { getPlayersByGroupAndTeam } from '@storage/players/get-players-by-group-and-team'
-import { PlayerStorageDTO } from '@storage/players/player-storage-dto'
+import { removePlayerByGroup } from '@storage/players/remove-player-by-group'
 import { PlayerAlreadyExistsError } from '@utils/errors/player-already-exists-error'
 
 import { PlayersContainer, Form, HeaderList, NumbersOfPlayers } from './styles'
@@ -74,6 +75,16 @@ export function Players() {
 
       console.log(error)
       Alert.alert('Novo jogador(a)', 'Não foi possível adicionar')
+    }
+  }
+
+  async function handleRemovePlayer(playerId: string) {
+    try {
+      await removePlayerByGroup(playerId, groupId)
+      await fetchPlayersByTeam()
+    } catch (error) {
+      console.log(error)
+      Alert.alert('Remover jogador(a)', 'Não foi possível remover o jogador(a)')
     }
   }
 
@@ -152,7 +163,12 @@ export function Players() {
         data={players}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
-          return <PlayerCard name={item.name} onRemove={() => {}} />
+          return (
+            <PlayerCard
+              name={item.name}
+              onRemove={() => handleRemovePlayer(item.id)}
+            />
+          )
         }}
         ListEmptyComponent={() => (
           <ListEmpty message="Não há pessoas nesse time" />
