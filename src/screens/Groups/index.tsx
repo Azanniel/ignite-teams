@@ -7,6 +7,7 @@ import { Highlight } from '@components/Highlight'
 import { GroupCard } from '@components/GroupCard'
 import { ListEmpty } from '@components/ListEmpty'
 import { Button } from '@components/Button'
+import { Loading } from '@components/Loading'
 
 import { GroupStorageDTO } from '@storage/group/group-storage-dto'
 import { findManyGroups } from '@storage/group/find-many-groups'
@@ -14,6 +15,7 @@ import { findManyGroups } from '@storage/group/find-many-groups'
 import { GroupsContainer } from './styles'
 
 export function Groups() {
+  const [isLoading, setIsLoading] = useState(true)
   const [groups, setGroups] = useState<GroupStorageDTO[]>([])
 
   const { navigate } = useNavigation()
@@ -24,10 +26,13 @@ export function Groups() {
 
   async function fetchGroups() {
     try {
+      setIsLoading(true)
       const response = await findManyGroups()
       setGroups(response)
     } catch (error) {
       console.error(error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -47,27 +52,31 @@ export function Groups() {
 
       <Highlight title="Turmas" subtitle="Jogue com a sua turma" />
 
-      <FlatList
-        data={groups}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => {
-          return (
-            <GroupCard
-              title={item.name}
-              onPress={() => handleOpenGroup(item.id)}
-            />
-          )
-        }}
-        contentContainerStyle={
-          groups.length === 0 && {
-            flex: 1,
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <FlatList
+          data={groups}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => {
+            return (
+              <GroupCard
+                title={item.name}
+                onPress={() => handleOpenGroup(item.id)}
+              />
+            )
+          }}
+          contentContainerStyle={
+            groups.length === 0 && {
+              flex: 1,
+            }
           }
-        }
-        ListEmptyComponent={() => (
-          <ListEmpty message="Que tal cadastrar a primeira turma?" />
-        )}
-        showsVerticalScrollIndicator={false}
-      />
+          ListEmptyComponent={() => (
+            <ListEmpty message="Que tal cadastrar a primeira turma?" />
+          )}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
 
       <Button title="Criar nova turma" onPress={handleNavigateToNewGroup} />
     </GroupsContainer>
